@@ -23,10 +23,12 @@ void	ft_send_bits(int pid, char i)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(100);
 		bit++;
+		pause();
 	}
 }
+
+void a(){};
 
 int	main(int argc, char **argv)
 {
@@ -34,6 +36,7 @@ int	main(int argc, char **argv)
 	int	i;
 
 	i = 0;
+	signal(SIGUSR1, a);
 	if (argc == 3)
 	{
 		pid = ft_atoi(argv[1]);
@@ -42,7 +45,6 @@ int	main(int argc, char **argv)
 			ft_send_bits(pid, argv[2][i]);
 			i++;
 		}
-		ft_send_bits(pid, '\n');
 	}
 	else
 	{

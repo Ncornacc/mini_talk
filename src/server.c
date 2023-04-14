@@ -9,28 +9,32 @@
 /*   Updated: 2023/03/16 14:45:40 by ncornacc      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
-
+#include <stdio.h>
 #include "minitalk.h"
 
-void	ft_sighandler(int signal)
+void	ft_sighandler(int signal, siginfo_t *info, void *value)
 {
-	static int	bit;
-	static int	i;
+	static int				bit = 0;
+	static unsigned long	i = 0;
 
+	(void)value;
 	if (signal == SIGUSR1)
 		i |= (0x01 << bit);
 	bit++;
 	if (bit == 8)
 	{
-		ft_printf("%c", i);
+		write(1, &i, 1);
 		bit = 0;
 		i = 0;
 	}
+	usleep(100);
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main(int argc, char **argv)
 {
 	int	pid;
+	struct sigaction    sa;
 
 	(void)argv;
 	if (argc != 1)
@@ -40,13 +44,13 @@ int	main(int argc, char **argv)
 		return (0);
 	}
 	pid = getpid();
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = ft_sighandler;
 	ft_printf("\n \033[91mPID\033[0m \033[92m->\033[0m %d", pid);
 	ft_printf("\n \033[93mWaiting:...\033[0m\n");
+		sigaction(SIGUSR1, &sa, 0);
+		sigaction(SIGUSR2, &sa, 0);
 	while (argc == 1)
-	{
-		signal(SIGUSR1, ft_sighandler);
-		signal(SIGUSR2, ft_sighandler);
 		pause ();
-	}
 	return (0);
 }
