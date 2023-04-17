@@ -12,23 +12,34 @@
 
 #include "minitalk.h"
 
+int	END = 0;
+
+void	got_signal(int sig)
+{
+	if (sig == SIGUSR1)
+		END = 1;
+}
+
 void	ft_send_bits(int pid, char i)
 {
 	int	bit;
 
-	bit = 0;
-	while (bit < 8)
+	bit = 7;
+	while (bit >= 0)
 	{
 		if ((i & (0x01 << bit)) != 0)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		bit++;
-		pause();
+		bit--;
+		while (1)
+		{
+			if (END == 1)
+				break ;
+		}
+		END = 0;
 	}
 }
-
-void a(){};
 
 int	main(int argc, char **argv)
 {
@@ -36,7 +47,7 @@ int	main(int argc, char **argv)
 	int	i;
 
 	i = 0;
-	signal(SIGUSR1, a);
+	signal(SIGUSR1, got_signal);
 	if (argc == 3)
 	{
 		pid = ft_atoi(argv[1]);

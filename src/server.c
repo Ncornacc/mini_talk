@@ -18,8 +18,8 @@ void	ft_sighandler(int signal, siginfo_t *info, void *value)
 	static unsigned long	i = 0;
 
 	(void)value;
-	if (signal == SIGUSR1)
-		i |= (0x01 << bit);
+	i = i << 1 | (signal == SIGUSR1);
+		
 	bit++;
 	if (bit == 8)
 	{
@@ -27,7 +27,6 @@ void	ft_sighandler(int signal, siginfo_t *info, void *value)
 		bit = 0;
 		i = 0;
 	}
-	usleep(100);
 	kill(info->si_pid, SIGUSR1);
 }
 
@@ -44,13 +43,17 @@ int	main(int argc, char **argv)
 		return (0);
 	}
 	pid = getpid();
-	sa.sa_flags = SA_SIGINFO;
+	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
 	sa.sa_sigaction = ft_sighandler;
+	sigemptyset(&sa.sa_mask);
 	ft_printf("\n \033[91mPID\033[0m \033[92m->\033[0m %d", pid);
 	ft_printf("\n \033[93mWaiting:...\033[0m\n");
-		sigaction(SIGUSR1, &sa, 0);
-		sigaction(SIGUSR2, &sa, 0);
-	while (argc == 1)
-		pause ();
+	sigaction(SIGUSR1, &sa, 0);	
+	sigaction(SIGUSR2, &sa, 0);
+	while (1)
+	{	
+		sleep(1);
+	}
+		
 	return (0);
 }
