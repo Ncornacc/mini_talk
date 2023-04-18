@@ -19,7 +19,6 @@ void	ft_sighandler(int signal, siginfo_t *info, void *value)
 
 	(void)value;
 	i = i << 1 | (signal == SIGUSR1);
-		
 	bit++;
 	if (bit == 8)
 	{
@@ -32,8 +31,8 @@ void	ft_sighandler(int signal, siginfo_t *info, void *value)
 
 int	main(int argc, char **argv)
 {
-	int	pid;
-	struct sigaction    sa;
+	int					pid;
+	struct sigaction	sa;
 
 	(void)argv;
 	if (argc != 1)
@@ -48,12 +47,11 @@ int	main(int argc, char **argv)
 	sigemptyset(&sa.sa_mask);
 	ft_printf("\n \033[91mPID\033[0m \033[92m->\033[0m %d", pid);
 	ft_printf("\n \033[93mWaiting:...\033[0m\n");
-	sigaction(SIGUSR1, &sa, 0);	
+	sigaction(SIGUSR1, &sa, 0);
 	sigaction(SIGUSR2, &sa, 0);
 	while (1)
 	{	
 		sleep(1);
 	}
-		
 	return (0);
 }

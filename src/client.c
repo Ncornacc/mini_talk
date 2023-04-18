@@ -12,12 +12,12 @@
 
 #include "minitalk.h"
 
-int	END = 0;
+int	g_end = 0;
 
 void	got_signal(int sig)
 {
 	if (sig == SIGUSR1)
-		END = 1;
+		g_end = 1;
 }
 
 void	ft_send_bits(int pid, char i)
@@ -27,17 +27,17 @@ void	ft_send_bits(int pid, char i)
 	bit = 7;
 	while (bit >= 0)
 	{
-		if ((i & (0x01 << bit)) != 0)
+		if ((i & (1 << bit)) != 0)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
 		bit--;
 		while (1)
 		{
-			if (END == 1)
+			if (g_end == 1)
 				break ;
 		}
-		END = 0;
+		g_end = 0;
 	}
 }
 
